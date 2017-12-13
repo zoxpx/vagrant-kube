@@ -5,7 +5,6 @@ hostname -I | grep -wq $K8S_MASTER_IP
 if [ $? -eq 0 ]; then
     echo ':: Configuring Kubernetes Master'
     kubeadm reset
-    kubeadm token create $K8S_TOKEN --ttl 0
     cat > /etc/kubernetes/vagrant.yaml << _eof
 apiVersion: kubeadm.k8s.io/v1alpha1
 kind: MasterConfiguration
@@ -19,6 +18,7 @@ networking:
   podSubnet: $K8S_CIDR
 _eof
     kubeadm init --config /etc/kubernetes/vagrant.yaml
+    kubeadm token create $K8S_TOKEN --ttl 0
     export KUBECONFIG=/etc/kubernetes/admin.conf
     echo "WARNING: Making $KUBECONFIG public (not reccommended for production!!)" >&2
     chmod a+r $KUBECONFIG && echo "export KUBECONFIG=$KUBECONFIG" >> /etc/profile.d/k8s_vagrant.sh

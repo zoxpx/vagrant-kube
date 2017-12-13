@@ -12,6 +12,7 @@ echo "master: $SALT_MASTER" > /etc/salt/minion.d/99-master-address.conf
 
 if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
     export DEBIAN_FRONTEND=noninteractive
+    #echo "deb http://repo.saltstack.com/apt/debian/9/amd64/2016.11 stretch main" >> /etc/apt/sources.list.d/saltstack.list
     echo "deb http://repo.saltstack.com/apt/ubuntu/16.04/amd64/2016.11 xenial main" >> /etc/apt/sources.list.d/saltstack.list
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E08A149DE57BFBE
     apt-get update && apt-get install -y salt-minion
