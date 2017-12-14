@@ -28,6 +28,6 @@ _eof
 
 else
     echo ':: Joining Kubernetes Cluster'
-    kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443
+    kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443 --skip-preflight-checks
 fi
 

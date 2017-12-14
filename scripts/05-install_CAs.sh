@@ -6,7 +6,7 @@ if [ "x$CA_FILE" = x ] || [ ! -f "$CA_FILE" ] ; then
     exit 0
 fi
 
-echo ':: Installing CA cert $CA_FILE ...'
+echo ":: Installing CA cert $CA_FILE ..."
 if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
     export DEBIAN_FRONTEND=noninteractive
     [ ! -d /usr/share/ca-certificates/extra ] && mkdir -p /usr/share/ca-certificates/extra
