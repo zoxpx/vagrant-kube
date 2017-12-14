@@ -116,6 +116,8 @@ _eof
                "K8S_CIDR" => "#{k8s_cidr}",
                "MYVMIF" => "#{myvmif}",
                "MYSTORAGE" => "#{mystorage}",
+               "SALT_MASTER" => "192.168.56.1",
+               "CA_FILE" => "/vagrant/scripts/PWX_ca.crt",
             }
          end
       end
