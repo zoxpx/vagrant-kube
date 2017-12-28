@@ -18,6 +18,7 @@ Type=notify
 PermissionsStartOnly=true
 Environment=ETCD_NAME=%H
 EnvironmentFile=-/etc/default/%p
+ExecStartPre=-/usr/bin/install -o etcd -g etcd -m 755 -d /var/lib/etcd
 ExecStart=/usr/local/bin/etcd --advertise-client-urls 'http://localhost:2379,http://${K8S_MASTER_IP}:2379' --listen-client-urls 'http://0.0.0.0:2379' --data-dir /var/lib/etcd/default
 Restart=on-abnormal
 RestartSec=10s
