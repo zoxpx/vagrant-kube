@@ -4,7 +4,7 @@
 # - can turn off via: awk '$2~/swap/{print $1}' /etc/fstab | xargs -n1 swapoff; sed -i -e 's/.*swap.*/# \0  # VAGRANT/' /etc/fstab
 # - or pass '--fail-swap-on=false' in config  (which we are doing here)
 
-kubectl version --short 2>/dev/null | grep -q v1.8      # "Client Version: v1.8.4"
+kubectl version --short 2>/dev/null | head -1 | awk -Fv '{exit ($2>1.8)?0:1}'	# "Client Version: v1.8.x" or higher
 if [ $? -eq 0 ]; then
     CF=/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
     grep -q 'Environment="KUBELET_EXTRA_ARGS=' $CF
