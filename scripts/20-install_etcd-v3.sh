@@ -1,6 +1,11 @@
 #!/bin/sh
 # install_etcd_v3 - installs the Etcd v3 key/value database (standalone install, shared between Portworx and Kubernetes)
 
+if [ "x$K8S_MASTER_IP" = x ]; then
+    echo ":: Skipping install of Etcd (\$K8S_MASTER_IP not defined)"
+    exit 0
+fi
+
 hostname -I | grep -wq $K8S_MASTER_IP
 if [ $? -eq 0 ]; then
     echo ':: Installing Etcd k/v database ...'
