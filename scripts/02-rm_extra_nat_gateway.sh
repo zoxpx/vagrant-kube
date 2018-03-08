@@ -7,5 +7,5 @@ DFL_NAT_GATEWAY=10.0.2.2
 
 # Persist via CRON  (note: require active crond service)
 echo "# VAGRANT - $0" >> /etc/crontab
-echo "@reboot root sleep 20 ; [ `ip route | grep -c 'default via '` -gt 1 ] && ip route delete default via $DFL_NAT_GATEWAY" >> /etc/crontab
+echo "@reboot root sleep 20 ; [ \`ip route | grep -c 'default via '\` -gt 1 ] && ip route delete default via $DFL_NAT_GATEWAY" >> /etc/crontab
 
