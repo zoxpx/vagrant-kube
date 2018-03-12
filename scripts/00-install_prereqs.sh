@@ -14,6 +14,7 @@ elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
 	setenforce 0
     systemctl disable firewalld && systemctl stop firewalld
     yum clean all
+    yum makecache all
     yum install -y curl make net-tools bind-utils epel-release yum-plugin-versionlock
 
 else    # ------------------------------------> (unsuported)
