@@ -17,6 +17,7 @@ ostype = ENV['KUBE_OSTYPE'] || 'ubuntu16'
 vm_conf = {
    #'ubuntu14' => [ 'ubuntu/trusty64', 'eth1', 'SATAController', 1, { "sdb" => 15*1024, "sdc" => 20*1024 } ],
    'ubuntu16' => [ 'ubuntu/xenial64', 'enp0s8', 'SCSI', 2, { "sdc" => 15*1024, "sdd" => 20*1024 } ],
+   'bento16' => [ 'bento/ubuntu-16.04', 'eth1', 'SATA Controller', 1, { "sdb" => 15*1024, "sdc" => 20*1024 } ],
    'centos7'  => [ 'centos/7', 'eth1', 'IDE', 1, { "sdb" => 20*1024 } ],
    #'debian8'  => [ 'debian/jessie64', 'eth1', 'SATA Controller', 1, { "sdb" => 15*1024, "sdc" => 20*1024 } ],
 }
