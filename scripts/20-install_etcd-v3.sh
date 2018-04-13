@@ -1,18 +1,26 @@
 #!/bin/sh
 # install_etcd_v3 - installs the Etcd v3 key/value database (standalone install, shared between Portworx and Kubernetes)
 
+REL=v3.2.18
+DEST=/opt/etcd
+
 if [ "x$K8S_MASTER_IP" = x ]; then
     echo ":: Skipping install of Etcd (\$K8S_MASTER_IP not defined)"
     exit 0
+elif ! hostname -I | grep -wq $K8S_MASTER_IP ; then
+    echo '(skipping install of Etcd on this node)'
+    exit 0
 fi
 
-hostname -I | grep -wq $K8S_MASTER_IP
-if [ $? -eq 0 ]; then
-    echo ':: Installing Etcd k/v database ...'
-    curl -fsSL https://github.com/coreos/etcd/releases/download/v3.2.6/etcd-v3.2.6-linux-amd64.tar.gz | \
-	tar -xvz --strip=1 -f - -C /usr/local/bin etcd-v3.2.6-linux-amd64/etcdctl etcd-v3.2.6-linux-amd64/etcd
-    useradd -d /var/lib/etcd -s /bin/false -m etcd
-    cat > /lib/systemd/system/etcd.service << _eof
+echo ':: Installing Etcd k/v database ...'
+useradd -d $DEST -s /bin/false -m etcd
+install -o etcd -g etcd -m 755 -d $DEST $DEST/bin $DEST/datystemctl daemon-reload
+systemctl enable etcd
+systemctl restart etcd
+curl -fsSL https://github.com/coreos/etcd/releases/download/$REL/etcd-${REL}-linux-amd64.tar.gz | \
+    tar -xvz --strip=1 -f - -C $DEST/bin etcd-${REL}-linux-amd64/etcdctl etcd-${REL}-linux-amd64/etcd
+ln -sf $DEST/bin/etcdctl /usr/local/bin
+cat > /lib/systemd/system/etcd.service << _eof
 [Unit]
 Description=etcd key-value store
 After=network.target
@@ -23,8 +31,8 @@ Type=notify
 PermissionsStartOnly=true
 Environment=ETCD_NAME=%H
 EnvironmentFile=-/etc/default/%p
-ExecStartPre=-/usr/bin/install -o etcd -g etcd -m 755 -d /var/lib/etcd
-ExecStart=/usr/local/bin/etcd --advertise-client-urls 'http://localhost:2379,http://${K8S_MASTER_IP}:2379' --listen-client-urls 'http://0.0.0.0:2379' --data-dir /var/lib/etcd/default
+ExecStartPre=-/usr/bin/install -o etcd -g etcd -m 755 -d $DEST/data
+ExecStart=$DEST/bin/etcd --advertise-client-urls 'http://localhost:2379,http://${K8S_MASTER_IP}:2379' --listen-client-urls 'http://0.0.0.0:2379' --data-dir $DEST/data
 Restart=on-abnormal
 RestartSec=10s
 LimitNOFILE=40000
@@ -32,11 +40,8 @@ LimitNOFILE=40000
 [Install]
 WantedBy=multi-user.target
 _eof
-    systemctl daemon-reload
-    systemctl enable etcd
-    systemctl restart etcd
 
-else
-    echo '(skipping install of Etcd on this node)'
-fi
+systemctl daemon-reload
+systemctl enable etcd
+systemctl restart etcd
 
