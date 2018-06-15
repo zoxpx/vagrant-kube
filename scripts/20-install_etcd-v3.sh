@@ -14,9 +14,8 @@ fi
 
 echo ':: Installing Etcd k/v database ...'
 useradd -d $DEST -s /bin/false -m etcd
-install -o etcd -g etcd -m 755 -d $DEST $DEST/bin $DEST/datystemctl daemon-reload
-systemctl enable etcd
-systemctl restart etcd
+install -o etcd -g etcd -m 755 -d $DEST $DEST/bin $DEST/data
+
 curl -fsSL https://github.com/coreos/etcd/releases/download/$REL/etcd-${REL}-linux-amd64.tar.gz | \
     tar -xvz --strip=1 -f - -C $DEST/bin etcd-${REL}-linux-amd64/etcdctl etcd-${REL}-linux-amd64/etcd
 ln -sf $DEST/bin/etcdctl /usr/local/bin
