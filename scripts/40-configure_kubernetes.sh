@@ -10,7 +10,7 @@ fi
 hostname -I | grep -wq $K8S_MASTER_IP
 if [ $? -eq 0 ]; then
     echo ':: Configuring Kubernetes Master'
-    kubeadm reset
+    kubeadm reset --force
     cat > /etc/kubernetes/vagrant.yaml << _eof
 apiVersion: kubeadm.k8s.io/v1alpha1
 kind: MasterConfiguration

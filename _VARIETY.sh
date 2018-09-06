@@ -7,8 +7,8 @@ export KUBE_OSTYPE=bento16
 
 # KB1 setup
 
-chmod 755 scripts/10a-install_docker_latest.sh
-chmod 644 scripts/10b-install_docker_native.sh
+chmod 755 scripts/10b-install_docker_native.sh
+chmod 644 scripts/10a-install_docker_latest.sh
 chmod 755 scripts/30a-install_kubernetes_latest.sh
 chmod 644 scripts/30b-install_kubernetes-v1.8.sh
 
