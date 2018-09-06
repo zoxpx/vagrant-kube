@@ -1,7 +1,7 @@
 #!/bin/sh
 # configure_kubernetes - configures and starts (or joints) the Kubernetes cluster
 
-type -f kubeadm 2>&1 > /dev/null
+command -v kubeadm > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "$0: ERROR - kubeadm command not found (have you deployed Kubernetes?)" 2>&1
     exit
