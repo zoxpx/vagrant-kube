@@ -20,7 +20,7 @@ echo ':: Fixing Kubernetes swap ...'
 
 #if [ $done -eq 0 ]; then
 #    echo 'WARN: K8s config-option not found -- Turning off system swap instead...'
-    awk '$2~/swap/{print $1}' /etc/fstab | xargs -n1 swapoff
+    awk '/swap/{print $1}' /etc/fstab | xargs -n1 swapoff
     sed -i -e 's/.*swap.*/# \0  # VAGRANT/' /etc/fstab
 #fi
 
