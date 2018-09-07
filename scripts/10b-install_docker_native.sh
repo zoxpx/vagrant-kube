@@ -5,6 +5,7 @@ echo ':: Installing Docker (native) ...'
 
 if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
     export DEBIAN_FRONTEND=noninteractive
+    dpkg --purge docker-ce
     apt-get install -y docker.io
 
 elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
