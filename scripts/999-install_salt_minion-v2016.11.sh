@@ -12,10 +12,14 @@ echo "master: $SALT_MASTER" > /etc/salt/minion.d/99-master-address.conf
 
 if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
     export DEBIAN_FRONTEND=noninteractive
+    rele=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
+    vers=$(lsb_release -rs)
+    code=$(lsb_release -cs)
+    if [ "x$rele" == x ] || [ "x$vers" == x ] || [ "x$code" == x ]; then
+        echo "$0: ERROR -- could not get appropriate release/version/code via 'lsb_release'" >&2
+        exit 1
+    fi
     #echo "deb http://repo.saltstack.com/apt/debian/9/amd64/2016.11 stretch main" > /etc/apt/sources.list.d/saltstack.list
-    rele=$(lsb_release -a 2>/dev/null | awk '/^Distributor ID:/{print tolower($3)}')	# e.g. ubuntu
-    vers=$(lsb_release -a 2>/dev/null | awk '/^Release:/{print $2}')			# e.g. 16.04
-    code=$(lsb_release -a 2>/dev/null | awk '/^Codename:/{print $2}')			# e.g. xenial
     echo "deb http://repo.saltstack.com/apt/$rele/$vers/amd64/2016.11 $code main" > /etc/apt/sources.list.d/saltstack.list
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E08A149DE57BFBE
     apt-get update && apt-get install -y salt-minion
