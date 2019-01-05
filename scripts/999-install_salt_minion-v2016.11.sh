@@ -1,4 +1,5 @@
 #!/bin/sh
+# - install manually via: env SALT_MASTER=192.168.56.1 sudo -E bash /vagrant/scripts/999-install_salt_minion-v2016.11.sh
 
 if [ "x$SALT_MASTER" = x ]; then
     echo "SALT_MASTER variable not defined - skipping install of salt-client" 2>&1

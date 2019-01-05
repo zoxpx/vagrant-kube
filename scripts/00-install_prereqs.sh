@@ -15,7 +15,7 @@ elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
     systemctl disable firewalld && systemctl stop firewalld
     yum clean all
     yum makecache all
-    yum install -y curl make net-tools bind-utils epel-release yum-plugin-versionlock
+    yum install -y curl make net-tools bind-utils epel-release e2fsprogs yum-plugin-versionlock
 
 else    # ------------------------------------> (unsuported)
     echo "Your platform is not supported" >&2

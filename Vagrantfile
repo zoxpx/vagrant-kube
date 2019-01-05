@@ -11,6 +11,7 @@ vm_nodes = {            # EDIT to specify VM node names, and their private IP (v
 # EDIT or specify ENV variable to define OS-Type (see `vm_conf` below)
 ostype = ENV['KUBE_OSTYPE'] || 'ubuntu16'
 #ostype = ENV['KUBE_OSTYPE'] || 'centos7'
+#ostype = ENV['KUBE_OSTYPE'] || 'bento16'
 
 # VM config, format: <type-label> => [ 0:vagrant-box, 1:vm-net-iface, 2:vm-disk-controller, 3:vm-start-port, 4:vm-drives-map ]
 # see https://atlas.hashicorp.com/search? for more VM images (ie. "box-names")

@@ -1,5 +1,6 @@
 #!/bin/sh
 # configure_kubernetes - configures and starts (or joints) the Kubernetes cluster
+# - see also https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1alpha3
 
 command -v kubeadm > /dev/null 2>&1
 if [ $? -ne 0 ]; then
@@ -9,9 +10,33 @@ fi
 
 hostname -I | grep -wq $K8S_MASTER_IP
 if [ $? -eq 0 ]; then
-    echo ':: Configuring Kubernetes Master'
+    ver=$(kubectl version --short 2>&1 | awk -Fv '/Client Version: v/{print $2}')
+    echo ":: Configuring Kubernetes Master (v$ver)"
     kubeadm reset --force
-    cat > /etc/kubernetes/vagrant.yaml << _eof
+    echo $ver | grep -q 1.13
+    if [ $? -eq 0 ]; then
+	cat > /etc/kubernetes/vagrant.yaml << _eof
+apiVersion: kubeadm.k8s.io/v1alpha3
+kind: InitConfiguration
+bootstrapTokens:
+- token: "030ffd.5d7a97b7e0d23ba9"
+  description: "kubeadm bootstrap token"
+  ttl: "24h"
+apiEndpoint:
+  advertiseAddress: "$K8S_MASTER_IP"
+  bindPort: 6443
+---
+apiVersion: kubeadm.k8s.io/v1alpha3
+kind: ClusterConfiguration
+etcd:
+  external:
+    endpoints:
+    - "http://${K8S_MASTER_IP}:2379"
+networking:
+  podSubnet: "$K8S_CIDR"
+_eof
+    else
+	cat > /etc/kubernetes/vagrant.yaml << _eof
 apiVersion: kubeadm.k8s.io/v1alpha1
 kind: MasterConfiguration
 api:
@@ -23,6 +48,7 @@ token: $K8S_TOKEN
 networking:
   podSubnet: $K8S_CIDR
 _eof
+    fi
     kubeadm init --config /etc/kubernetes/vagrant.yaml
     kubeadm token create $K8S_TOKEN --ttl 0
     export KUBECONFIG=/etc/kubernetes/admin.conf
@@ -34,6 +60,7 @@ _eof
 
 else
     echo ':: Joining Kubernetes Cluster'
-    kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443 --skip-preflight-checks --discovery-token-unsafe-skip-ca-verification
+    #kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443 --skip-preflight-checks --discovery-token-unsafe-skip-ca-verification
+    kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443 --ignore-preflight-errors=all --discovery-token-unsafe-skip-ca-verification
 fi
 
