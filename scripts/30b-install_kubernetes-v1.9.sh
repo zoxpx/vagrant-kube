@@ -2,14 +2,8 @@
 # install_kubernetes - installs the Kubernetes cluster (first node [k8s_master_host] will be the master)
 # - version check @Ubuntu: apt-cache policy kubeadm || @CentOS yum --showduplicates list kubeadm
 
-#VER=1.6.1-\*
-#VER=1.6.11-\*
-#VER=1.6.13-\*
-#VER=1.7.1-\*
-#VER=1.7.3-\*
-#VER=1.7.8-\*
-#VER=1.7.11-\*
-VER=1.8.10-\*
+#VER=1.8.10-\*
+VER=1.9.11-\*
 
 echo ":: Installing Kubernetes (v${VER})..."
 

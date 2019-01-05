@@ -10,11 +10,11 @@ fi
 
 hostname -I | grep -wq $K8S_MASTER_IP
 if [ $? -eq 0 ]; then
-    ver=$(kubectl version --short 2>&1 | awk -Fv '/Client Version: v/{print $2}')
-    echo ":: Configuring Kubernetes Master (v$ver)"
+    k8sVer=$(kubectl version --short 2>&1 | awk -Fv '/Client Version: v/{print $2}' | awk -F. '{print $1*100+$2}')
+    echo ":: Configuring Kubernetes Master (v$k8sVer)"
     kubeadm reset --force
-    echo $ver | grep -q 1.13
-    if [ $? -eq 0 ]; then
+    if [ "x$k8sVer" != x ] && [ $k8sVer -ge 113 ]; then
+	# Kubernetes versions 1.13.x or higher, use the following kubeadm format
 	cat > /etc/kubernetes/vagrant.yaml << _eof
 apiVersion: kubeadm.k8s.io/v1alpha3
 kind: InitConfiguration
@@ -36,6 +36,7 @@ networking:
   podSubnet: "$K8S_CIDR"
 _eof
     else
+	# Kubernetes versions 1.12.x or lower, use the following kubeadm format
 	cat > /etc/kubernetes/vagrant.yaml << _eof
 apiVersion: kubeadm.k8s.io/v1alpha1
 kind: MasterConfiguration
