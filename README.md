@@ -64,7 +64,7 @@ chmod a-x scripts/10b-install_docker_native.sh
 
 ### ADVANCED: Add your own VM-image
 
-To introduce your own image, or to use a different image for the VM (see [atlas.hashicorp.com](https://atlas.hashicorp.com/search?) for more VM images), edit the `vm_conf` variable, and add a line with the following parameters:
+To introduce your own image, or to use a different image for your guest VMs (see [app.vagrantup.com/boxes](https://app.vagrantup.com/boxes/search?provider=virtualbox) for more VM images), edit the `vm_conf` variable, and add a line with the following parameters:
 
 1. name of the harshicorp.com virtualbox image (e.g. `ubuntu/xenial64`)
 2. name of the _second_ network interface (e.g. `eth1`)
