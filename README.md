@@ -4,10 +4,12 @@ This repository contains a self-contained [Vagrant](https://en.wikipedia.org/wik
 
 ## Prerequisites
 
-Make sure you have the following installed on your Linux host system:
+Make sure you have the following prerequisites satisfied before starting your K8s cluster:
 
-* Virtualbox (install native package from distro, or download from [www.virtualbox.org](https://www.virtualbox.org/))
-* Vagrant (download from [www.vagrantup.com](https://www.vagrantup.com/))
+* Host running 64bit Linux system, with at least 16 GB RAM
+* Virtualbox hypervisor package installed (install distribution's package, or download from [www.virtualbox.org](https://www.virtualbox.org/))
+* Vagrant package installed (download from [www.vagrantup.com](https://www.vagrantup.com/))
+* Git package installed (in case you are getting these sources directly from Github)
 
 ## Installation and Usage
 
@@ -21,8 +23,8 @@ vagrant up
 vagrant ssh kb-master
 kubectl get nodes -o wide
 
-# One can also use the IPs to connect directly
-ssh root@192.168.56.70
+# One can also use the IPs to connect directly from the host
+ssh root@192.168.56.80
 ```
 
 > **NOTE**: If not already present, the VM-images will be downloaded automatically from the Internet by the `vagrant up` command.
@@ -40,12 +42,12 @@ kubectl apply -f /vagrant/yamls/myql/vol.yaml
 
 # Start MySQL that uses Portworx storage
 kubectl apply -f /vagrant/yamls/myql/app.yaml
-kubectl get pods -o wide               # repeat a few times until POD is ready
+kubectl get pods -o wide               # repeat a few times until MySQL POD is ready
 
-# Failover TEST:
-## 1) Kill MySQL POD via `kubectl delete pod <mysql-pod-id>`,
-## 2) run `kubectl get pods -o wide` to validate DB failed over to a new node,
-## 3) run `kubectl exec -it <mysql-pod-id> -- /usr/bin/mysql -uroot -ppasswd` to validate DB data
+# Example: MySQL failover TEST:
+# 1) Kill MySQL POD via `kubectl delete pod <mysql-pod-id>`,
+# 2) run `kubectl get pods -o wide` to validate DB failed over to a new node,
+# 3) run `kubectl exec -it <mysql-pod-id> -- /usr/bin/mysql -uroot -ppasswd` to validate DB data
 ```
 
 * more information at [docs.portworx.com](https://docs.portworx.com/portworx-install-with-kubernetes/storage-operations/)
@@ -80,9 +82,13 @@ ostype = 'ubuntu16'     # also 'centos7' or 'bento16'
 Check the content of the [scripts](scripts) directory, and change exec-permissions on the install scripts to customize the installation:
 
 ```bash
-# Install latest Docker instead of native/distro package:
+# Example1: Install latest Docker instead of native/distro package:
 chmod a+x scripts/10a-install_docker_latest.sh
 chmod a-x scripts/10b-install_docker_native.sh
+
+# Example2: Install Kubernetes 1.9.11 instead of latest:
+chmod a+x scripts/30b-install_kubernetes-v1.9.sh
+chmod a-x scripts/30a-install_kubernetes_latest.sh
 ```
 
 ### Customize Networking
@@ -90,12 +96,12 @@ chmod a-x scripts/10b-install_docker_native.sh
 The current Vagrantifle is set up to use [host-only network](https://www.virtualbox.org/manual/ch07.html#network_hostonly),
 which means the _second_ network interface is set to a "private" network between your host-system and the VM guests.
 
-> **NOTE**: Note also that the VMs will have the _first_ network interface set to NAT-network IP 10.0.2.15, but this is a limitation of "vagrant" utility.
+> **NOTE**: the VMs will have the _first_ network interface set to Virtualbox'es NAT-network IP 10.0.2.15.  Unfortunately, this is a limitation of "vagrant" utility and it cannot be changed.
 
 If you want to change the setup to use the IPs from your company's network instead of "host-only" Virtualbox network, do the following:
 
-1. Ensure that `vm_nodes` variable uses a block of "free" IP addresses (e.g. IP addresses not normally in use),
-2. Change the following line in the `Vagrantfile`:
+1. Ensure that `vm_nodes` variable uses a block of "free" IP addresses (e.g. IP addresses not currently in use),
+2. Remove the following lines in the `Vagrantfile`:
 
 ```ruby
          unless ip.nil?
@@ -105,7 +111,7 @@ If you want to change the setup to use the IPs from your company's network inste
          end
 ```
 
-... into:
+... and replace with:
 
 ```ruby
          node.vm.network "public_network", ip: "#{ip}", :netmask => "255.255.255.0"
@@ -116,11 +122,13 @@ If you want to change the setup to use the IPs from your company's network inste
 
 To introduce your own image, or to use a different image for your guest VMs (see [app.vagrantup.com/boxes](https://app.vagrantup.com/boxes/search?provider=virtualbox) for more VM images), edit the `vm_conf` variable, and add a line with the following parameters:
 
-1. name of the harshicorp.com virtualbox image (e.g. `ubuntu/xenial64`)
-2. name of the _second_ network interface (e.g. `eth1`)
-3. name of the configured storage controller (e.g. `SATA Controller`)
-4. starting index of the storage-port (e.g. port#1 == /dev/sdb)
-5. disk device and size in Mb (e.g. `{ "sdb" => 15*1024, "sdc" => 20*1024 }` adds 15Gb /dev/sdb and 20Gb /dev/sdc)
+1. a unique label for your VM image (will be used as a hashmap-key, e.g. `ubuntu16`)
+2. name of the [app.vagrantup.com image](https://app.vagrantup.com/boxes/search?provider=virtualbox) (e.g. `ubuntu/xenial64`)
+3. name of the VM's _second_ network interface (e.g. `eth1`)
+4. name of the VM's storage controller (e.g. `SATA Controller`)
+5. starting index of the VM's storage-port (e.g. port#1 == /dev/sdb)
+6. list of disk devices and sizes in MB
+   - e.g. `{ "sdb" => 15*1024, "sdc" => 20*1024 }` adds 15GB /dev/sdb and 20GB /dev/sdc
 
 ```ruby
 vm_conf = {
