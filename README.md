@@ -11,7 +11,7 @@ Make sure you have the following installed on your Linux host system:
 
 ## Installation and Usage
 
-To create and start the cluster, simply run the `vagrant up` command.
+To create and start the cluster, simply run the `vagrant up` command where your "Vagrantfile" is.
 
 ```bash
 # Start Vagrant VM's
@@ -26,6 +26,29 @@ ssh root@192.168.56.70
 ```
 
 > **NOTE**: If not already present, the VM-images will be downloaded automatically from the Internet by the `vagrant up` command.
+
+### Using Portworx
+
+All the kubernetes nodes (except master) will already have Portworx preconfigured and running on your cluster.
+
+To start a `mysql` database backed by the Portworx persistent volume, apply the 
+[vol.yaml](yamls/myql/vol.yaml) and [app.yaml](yamls/myql/app.yaml) on your k8s "master" node:
+
+```bash
+# Create portworx volume
+kubectl apply -f /vagrant/yamls/myql/vol.yaml
+
+# Start MySQL that uses Portworx storage
+kubectl apply -f /vagrant/yamls/myql/app.yaml
+kubectl get pods -o wide               # repeat a few times until POD is ready
+
+# Failover TEST:
+## 1) Kill MySQL POD via `kubectl delete pod <mysql-pod-id>`,
+## 2) run `kubectl get pods -o wide` to validate DB failed over to a new node,
+## 3) run `kubectl exec -it <mysql-pod-id> -- /usr/bin/mysql -uroot -ppasswd` to validate DB data
+```
+
+* more information at [docs.portworx.com](https://docs.portworx.com/portworx-install-with-kubernetes/storage-operations/)
 
 ## Customizations
 
