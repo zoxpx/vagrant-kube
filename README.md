@@ -29,7 +29,7 @@ ssh root@192.168.56.70
 
 ## Customizations
 
-### Number of nodes, node IPs
+### Change number of nodes, or node IPs
 
 Open up [Vagrantfile](Vagrantfile) in your favorite editor.
 
@@ -44,7 +44,7 @@ vm_nodes = {            # EDIT to specify VM node names, and their private IP (v
 }
 ```
 
-### VM's Linux OS type
+### Change guest VM's Linux OS
 
 In the same [Vagrantfile](Vagrantfile) find the `ostype` variable, and change it to specify which Linux OS will be used as guest VMs:
 
@@ -61,6 +61,33 @@ Check the content of the [scripts](scripts) directory, and change exec-permissio
 chmod a+x scripts/10a-install_docker_latest.sh
 chmod a-x scripts/10b-install_docker_native.sh
 ```
+
+### Customize Networking
+
+The current Vagrantifle is set up to use [host-only network](https://www.virtualbox.org/manual/ch07.html#network_hostonly),
+which means the _second_ network interface is set to a "private" network between your host-system and the VM guests.
+
+> **NOTE**: Note also that the VMs will have the _first_ network interface set to NAT-network IP 10.0.2.15, but this is a limitation of "vagrant" utility.
+
+If you want to change the setup to use the IPs from your company's network instead of "host-only" Virtualbox network, do the following:
+
+1. Ensure that `vm_nodes` variable uses a block of "free" IP addresses (e.g. IP addresses not normally in use),
+2. Change the following line in the `Vagrantfile`:
+
+```ruby
+         unless ip.nil?
+            node.vm.network "private_network", ip: "#{ip}", :netmask => "255.255.255.0"
+         else
+            node.vm.network "public_network", bridge: "eth0", use_dhcp_assigned_default_route: true
+         end
+```
+
+... into:
+
+```ruby
+         node.vm.network "public_network", ip: "#{ip}", :netmask => "255.255.255.0"
+```
+
 
 ### ADVANCED: Add your own VM-image
 

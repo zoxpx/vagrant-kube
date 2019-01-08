@@ -2,11 +2,10 @@
 # vim:ft=ruby:sw=3:et:
 
 vm_nodes = {            # EDIT to specify VM node names, and their private IP (vboxnet#)
-   'kb1' => "192.168.56.70",
-   'kb2' => "192.168.56.71",
-   'kb3' => "192.168.56.72",
-   'kb4' => "192.168.56.73",
-   'kb5' => "192.168.56.74",
+   'kb-master' => "192.168.56.80",
+   'kb-node1' => "192.168.56.81",
+   'kb-node2' => "192.168.56.82",
+   'kb-node3' => "192.168.56.83",
 }
 # EDIT or specify ENV variable to define OS-Type (see `vm_conf` below)
 ostype = ENV['KUBE_OSTYPE'] || 'ubuntu16'
