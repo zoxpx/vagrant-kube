@@ -13,27 +13,31 @@ if [ $? -eq 0 ]; then
     k8sVer=$(kubectl version --short 2>&1 | awk -Fv '/Client Version: v/{print $2}' | awk -F. '{print $1*100+$2}')
     echo ":: Configuring Kubernetes Master (v$k8sVer)"
     kubeadm reset --force
-    if [ "x$k8sVer" != x ] && [ $k8sVer -ge 113 ]; then
+    RBAC=v1alpha1 ; APIEP_KEY=apiEndpoint
+    if [ $k8sVer -ge 114 ]; then RBAC=v1beta1 ; APIEP_KEY=localAPIEndpoint ; fi
+    if [ $k8sVer -ge 113 ]; then
 	# Kubernetes versions 1.13.x or higher, use the following kubeadm format
 	cat > /etc/kubernetes/vagrant.yaml << _eof
-apiVersion: kubeadm.k8s.io/v1alpha3
+apiVersion: kubeadm.k8s.io/$RBAC
 kind: InitConfiguration
 bootstrapTokens:
 - token: "030ffd.5d7a97b7e0d23ba9"
-  description: "kubeadm bootstrap token"
-  ttl: "24h"
-apiEndpoint:
+  description: "kubeadm/vagrant bootstrap token"
+  ttl: "0"
+$APIEP_KEY:
   advertiseAddress: "$K8S_MASTER_IP"
   bindPort: 6443
 ---
-apiVersion: kubeadm.k8s.io/v1alpha3
+apiVersion: kubeadm.k8s.io/$RBAC
 kind: ClusterConfiguration
 etcd:
   external:
     endpoints:
     - "http://${K8S_MASTER_IP}:2379"
 networking:
+  dnsDomain: cluster.local
   podSubnet: "$K8S_CIDR"
+  serviceSubnet: 10.96.0.0/12
 _eof
     else
 	# Kubernetes versions 1.12.x or lower, use the following kubeadm format
@@ -51,7 +55,6 @@ networking:
 _eof
     fi
     kubeadm init --config /etc/kubernetes/vagrant.yaml
-    kubeadm token create $K8S_TOKEN --ttl 0
     export KUBECONFIG=/etc/kubernetes/admin.conf
     echo "WARNING: Making $KUBECONFIG public (not reccommended for production!!)" >&2
     chmod a+r $KUBECONFIG && echo "export KUBECONFIG=$KUBECONFIG" >> /etc/profile.d/k8s_vagrant.sh
@@ -61,7 +64,7 @@ _eof
 
 else
     echo ':: Joining Kubernetes Cluster'
-    #kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443 --skip-preflight-checks --discovery-token-unsafe-skip-ca-verification
-    kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443 --ignore-preflight-errors=all --discovery-token-unsafe-skip-ca-verification
+    kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443 --ignore-preflight-errors=all --discovery-token-unsafe-skip-ca-verification || \
+    kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443 --skip-preflight-checks --discovery-token-unsafe-skip-ca-verification
 fi
 
