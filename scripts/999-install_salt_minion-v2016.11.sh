@@ -16,7 +16,7 @@ if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
     rele=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
     vers=$(lsb_release -rs)
     code=$(lsb_release -cs)
-    if [ "x$rele" == x ] || [ "x$vers" == x ] || [ "x$code" == x ]; then
+    if [ "x$rele" = x ] || [ "x$vers" = x ] || [ "x$code" = x ]; then
         echo "$0: ERROR -- could not get appropriate release/version/code via 'lsb_release'" >&2
         exit 1
     fi
