@@ -3,7 +3,8 @@
 # - version check @Ubuntu: apt-cache policy kubeadm || @CentOS yum --showduplicates list kubeadm
 
 #VER=1.8.10-\*
-VER=1.9.11-\*
+#VER=1.9.11-\*
+VER=1.13.5-\*
 
 echo ":: Installing Kubernetes (v${VER})..."
 

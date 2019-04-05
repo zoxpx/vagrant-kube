@@ -86,8 +86,8 @@ Check the content of the [scripts](scripts) directory, and change exec-permissio
 chmod a+x scripts/10a-install_docker_latest.sh
 chmod a-x scripts/10b-install_docker_native.sh
 
-# Example2: Install Kubernetes 1.9.11 instead of latest:
-chmod a+x scripts/30b-install_kubernetes-v1.9.sh
+# Example2: Install Kubernetes 1.13 instead of latest:
+chmod a+x scripts/30b-install_kubernetes-v1.13.sh
 chmod a-x scripts/30a-install_kubernetes_latest.sh
 ```
 
