@@ -23,7 +23,7 @@ if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
     #echo "deb http://repo.saltstack.com/apt/debian/9/amd64/2016.11 stretch main" > /etc/apt/sources.list.d/saltstack.list
     echo "deb http://repo.saltstack.com/apt/$rele/$vers/amd64/2016.11 $code main" > /etc/apt/sources.list.d/saltstack.list
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E08A149DE57BFBE
-    apt-get update && apt-get install -y salt-minion
+    apt-get update -q && apt-get install -q -y salt-minion
 
 elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
     rpm -ivh https://repo.saltstack.com/yum/redhat/salt-repo-2016.11-2.el7.noarch.rpm
