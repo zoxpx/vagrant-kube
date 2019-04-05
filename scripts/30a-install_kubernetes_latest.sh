@@ -9,8 +9,8 @@ if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
     curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
     echo "deb http://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" \
 	> /etc/apt/sources.list.d/kubernetes.list
-    apt-get update
-    apt-get install -y kubelet kubeadm kubectl
+    apt-get update -q
+    apt-get install -q -y kubelet kubeadm kubectl
 
 elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
     cat > /etc/yum.repos.d/kubernetes.repo << _eof
