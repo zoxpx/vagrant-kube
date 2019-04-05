@@ -1,11 +1,13 @@
 #!/bin/sh
 # configure_kubernetes - configures and starts (or joints) the Kubernetes cluster
 # - see also https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1alpha3
+# - see also https://godoc.org/k8s.io/kubernetes/cmd/kubeadm/app/apis/kubeadm/v1beta1
+# - see also `kubectl -n kube-system get cm kubeadm-config -oyaml`
 
 command -v kubeadm > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo "$0: ERROR - kubeadm command not found (have you deployed Kubernetes?)" 2>&1
-    exit
+    exit -1
 fi
 
 hostname -I | grep -wq $K8S_MASTER_IP
@@ -13,34 +15,36 @@ if [ $? -eq 0 ]; then
     k8sVer=$(kubectl version --short 2>&1 | awk -Fv '/Client Version: v/{print $2}' | awk -F. '{print $1*100+$2}')
     echo ":: Configuring Kubernetes Master (v$k8sVer)"
     kubeadm reset --force
-    RBAC=v1alpha1 ; APIEP_KEY=apiEndpoint
-    if [ $k8sVer -ge 114 ]; then RBAC=v1beta1 ; APIEP_KEY=localAPIEndpoint ; fi
-    if [ $k8sVer -ge 113 ]; then
-	# Kubernetes versions 1.13.x or higher, use the following kubeadm format
+    if [ $k8sVer -ge 111 ]; then
+	# Kubernetes versions 1.11.x or higher, use the following kubeadm format
 	cat > /etc/kubernetes/vagrant.yaml << _eof
-apiVersion: kubeadm.k8s.io/$RBAC
+apiVersion: kubeadm.k8s.io/v1beta1
 kind: InitConfiguration
 bootstrapTokens:
-- token: "030ffd.5d7a97b7e0d23ba9"
-  description: "kubeadm/vagrant bootstrap token"
+- groups:
+  - system:bootstrappers:kubeadm:default-node-token
+  token: $K8S_TOKEN
   ttl: "0"
-$APIEP_KEY:
-  advertiseAddress: "$K8S_MASTER_IP"
+  usages:
+  - signing
+  - authentication
+localAPIEndpoint:
+  advertiseAddress: $K8S_MASTER_IP
   bindPort: 6443
 ---
-apiVersion: kubeadm.k8s.io/$RBAC
+apiVersion: kubeadm.k8s.io/v1beta1
 kind: ClusterConfiguration
 etcd:
   external:
     endpoints:
-    - "http://${K8S_MASTER_IP}:2379"
+    - http://${K8S_MASTER_IP}:2379
 networking:
   dnsDomain: cluster.local
-  podSubnet: "$K8S_CIDR"
+  podSubnet: $K8S_CIDR
   serviceSubnet: 10.96.0.0/12
 _eof
     else
-	# Kubernetes versions 1.12.x or lower, use the following kubeadm format
+	# Kubernetes versions 1.10.x or lower, use the following kubeadm format
 	cat > /etc/kubernetes/vagrant.yaml << _eof
 apiVersion: kubeadm.k8s.io/v1alpha1
 kind: MasterConfiguration
