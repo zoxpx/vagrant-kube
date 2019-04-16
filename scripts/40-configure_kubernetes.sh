@@ -62,10 +62,6 @@ _eof
     export KUBECONFIG=/etc/kubernetes/admin.conf
     echo "WARNING: Making $KUBECONFIG public (not reccommended for production!!)" >&2
     chmod a+r $KUBECONFIG && echo "export KUBECONFIG=$KUBECONFIG" >> /etc/profile.d/k8s_vagrant.sh
-
-    echo ':: Configuring Kubernetes Network'
-    kubectl apply -n kube-system -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')" --validate=false
-
 else
     echo ':: Joining Kubernetes Cluster'
     kubeadm join --token $K8S_TOKEN ${K8S_MASTER_IP}:6443 --ignore-preflight-errors=all --discovery-token-unsafe-skip-ca-verification || \
