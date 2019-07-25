@@ -31,6 +31,7 @@ else    # ------------------------------------> (unsuported)
 fi
 
 # Tune OS (kubernetes prerequisites)
+modprobe br_netfilter
 sysctl -w net.bridge.bridge-nf-call-iptables=1
 sysctl -w net.bridge.bridge-nf-call-ip6tables=1
 
