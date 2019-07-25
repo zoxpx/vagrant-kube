@@ -58,6 +58,7 @@ networking:
   podSubnet: $K8S_CIDR
 _eof
     fi
+    ## NOTE, use 'kubeadm init --kubernetes-version v1.11.3 ...'   to lock in k8s' container versions (e.g. API server)
     kubeadm init --config /etc/kubernetes/vagrant.yaml
     export KUBECONFIG=/etc/kubernetes/admin.conf
     echo "WARNING: Making $KUBECONFIG public (not reccommended for production!!)" >&2
