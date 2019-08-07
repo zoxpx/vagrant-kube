@@ -13,7 +13,7 @@ ostype = ENV['KUBE_OSTYPE'] || 'ubuntu16'
 #ostype = ENV['KUBE_OSTYPE'] || 'bento16'
 
 # VM config, format: <type-label> => [ 0:vagrant-box, 1:vm-net-iface, 2:vm-disk-controller, 3:vm-start-port, 4:vm-drives-map ]
-# see https://atlas.hashicorp.com/search? for more VM images (ie. "box-names")
+# see https://app.vagrantup.com/boxes/search for more VM images (ie. "box-names")
 vm_conf = {
    'ubuntu16' => [ 'ubuntu/xenial64', 'enp0s8', 'SCSI', 2, { "sdc" => 15*1024, "sdd" => 20*1024 } ],
    'ubuntu18' => [ 'ubuntu/bionic64', 'enp0s8', 'SCSI', 2, { "sdc" => 15*1024, "sdd" => 20*1024 } ],
