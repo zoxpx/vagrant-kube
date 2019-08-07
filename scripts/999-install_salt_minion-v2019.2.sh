@@ -20,13 +20,12 @@ if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
         echo "$0: ERROR -- could not get appropriate release/version/code via 'lsb_release'" >&2
         exit 1
     fi
-    #echo "deb http://repo.saltstack.com/apt/debian/9/amd64/2016.11 stretch main" > /etc/apt/sources.list.d/saltstack.list
-    echo "deb http://repo.saltstack.com/apt/$rele/$vers/amd64/2016.11 $code main" > /etc/apt/sources.list.d/saltstack.list
+    echo "deb http://repo.saltstack.com/apt/$rele/$vers/amd64/2019.2 $code main" > /etc/apt/sources.list.d/saltstack.list
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E08A149DE57BFBE
     apt-get update -q && apt-get install -q -y salt-minion
 
 elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
-    rpm -ivh https://repo.saltstack.com/yum/redhat/salt-repo-2016.11-2.el7.noarch.rpm
+    rpm -ivh https://repo.saltstack.com/yum/redhat/salt-repo-2019.2.el7.noarch.rpm
     yum install -y salt-minion
 
 else    # ------------------------------------> (unsuported)
