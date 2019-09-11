@@ -1,0 +1,57 @@
+##### Portworx storage class
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+    name: px-bbox-sc
+provisioner: kubernetes.io/portworx-volume
+parameters:
+   repl: "1"
+   shared: "false"
+---
+##### Portworx persistent volume claim
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: bbox-data
+   annotations:
+     volume.beta.kubernetes.io/storage-class: px-bbox-sc
+spec:
+   accessModes:
+     - ReadWriteOnce
+   resources:
+     requests:
+       storage: 1Gi
+---
+##### Busybox producer and consumer
+# - monitor via:
+#   kubectl logs -f -c producer pod/bbox-busywork
+#   kubectl logs -f -c consumer pod/bbox-busywork
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bbox-busywork
+spec:
+  initContainers:
+  - name: init-mkfifo
+    image: busybox
+    command: ['/bin/mkfifo', '/data/foo']
+    volumeMounts:
+    - mountPath: /data
+      name: xx123
+  containers:
+  - name: producer
+    image: busybox
+    command: ['/bin/sh', '-c', 'while true; do echo -n "SEND "; date |tee /data/foo; sleep 3; done']
+    volumeMounts:
+    - mountPath: /data
+      name: xx123
+  - name: consumer
+    image: busybox
+    command: ['/bin/sh', '-c', 'while true; do echo -n "GOT "; cat /data/foo; done']
+    volumeMounts:
+    - mountPath: /data
+      name: xx123
+  volumes:
+  - name: xx123
+    persistentVolumeClaim:
+      claimName: bbox-data
