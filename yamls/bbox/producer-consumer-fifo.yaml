@@ -7,6 +7,7 @@ provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "1"
    shared: "false"
+#  -note: `shared: "true"` doesn't work, but `shared: "false"` and `sharedv4: "true"` do
 ---
 ##### Portworx persistent volume claim
 kind: PersistentVolumeClaim
