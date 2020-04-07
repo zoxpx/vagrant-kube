@@ -7,7 +7,7 @@ echo ":: Installing LATEST Kubernetes ..."
 if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
     export DEBIAN_FRONTEND=noninteractive
     curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    echo "deb http://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" \
+    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" \
 	> /etc/apt/sources.list.d/kubernetes.list
     apt-get update -q
     apt-get install -q -y kubelet kubeadm kubectl

@@ -2,16 +2,16 @@
 # install_kubernetes - installs the Kubernetes cluster (first node [k8s_master_host] will be the master)
 # - version check @Ubuntu: apt-cache policy kubeadm || @CentOS yum --showduplicates list kubeadm
 
-#VER=1.8.10-\*
-#VER=1.9.11-\*
-VER=1.13.5-\*
+#VER=1.13.5-\*
+#VER=1.16.8-\*
+VER=1.17.4-\*
 
 echo ":: Installing Kubernetes (v${VER})..."
 
 if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
     export DEBIAN_FRONTEND=noninteractive
     curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    echo "deb http://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" \
+    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" \
 	> /etc/apt/sources.list.d/kubernetes.list
     apt-get update -q
     apt-get install -q -y kubelet=${VER} kubeadm=${VER} kubectl=${VER}

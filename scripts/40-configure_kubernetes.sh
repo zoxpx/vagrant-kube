@@ -12,7 +12,7 @@ fi
 
 hostname -I | grep -wq $K8S_MASTER_IP
 if [ $? -eq 0 ]; then
-    k8sVer=$(kubectl version --short 2>&1 | awk -Fv '/Client Version: v/{print $2}' | awk -F. '{print $1*100+$2}')
+    k8sVer=$(kubectl version --client --short 2>&1 | awk -Fv '/Client Version: v/{print $2}' | awk -F. '{print $1*100+$2}')
     echo ":: Configuring Kubernetes Master (v$k8sVer)"
     kubeadm reset --force
     if [ $k8sVer -ge 111 ]; then
