@@ -16,7 +16,7 @@ metadata:
 spec:
   storageClassName: px-bbox-sc
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 5Gi
