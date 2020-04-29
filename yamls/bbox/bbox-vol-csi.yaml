@@ -1,21 +1,20 @@
-##### Portworx storage class
+##### Portworx/CSI storage class
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
   name: px-bbox-sc
-provisioner: kubernetes.io/portworx-volume
+provisioner: pxd.portworx.com
 parameters:
   repl: "1"
   shared: "true"
 ---
-##### Portworx persistent volume claim
+##### Portworx/CSI persistent volume claim
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: bbox-data
-  annotations:
-    volume.beta.kubernetes.io/storage-class: px-bbox-sc
 spec:
+  storageClassName: px-bbox-sc
   accessModes:
     - ReadWriteOnce
   resources:
