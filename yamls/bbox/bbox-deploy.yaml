@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bbox-sleeper-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bbox-sleeper
+  template:
+    metadata:
+      labels:
+        app: bbox-sleeper
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        args:
+        - sleep
+        - "3600"
+        volumeMounts:
+        - mountPath: /data
+          name: xx123
+      volumes:
+      - name: xx123
+        persistentVolumeClaim:
+          claimName: bbox-data
