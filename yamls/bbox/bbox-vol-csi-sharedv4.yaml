@@ -1,0 +1,23 @@
+##### Portworx/CSI storage class
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: px-bbox-sc
+provisioner: pxd.portworx.com
+parameters:
+  repl: "1"
+  sharedv4: "true"
+  export_options: security_label
+---
+##### Portworx/CSI persistent volume claim   (see https://docs.portworx.com/portworx-install-with-kubernetes/storage-operations/csi/#storageclass-parameters)
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: bbox-data
+spec:
+  storageClassName: px-bbox-sc
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi

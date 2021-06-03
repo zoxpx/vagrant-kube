@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginxinc/nginx-unprivileged:stable
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /data
+          name: xx123
+      volumes:
+      - name: xx123
+        persistentVolumeClaim:
+          claimName: bbox-data
+      securityContext:
+        runAsUser: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        fsGroup: 1000
+        seLinuxOptions:
+            level: "s0:c123,c456"
